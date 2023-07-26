@@ -123,7 +123,7 @@ document.getElementById("saveAll").addEventListener("click", async function(){
 		for (const className in classes){
 			let jsonText = JSON.stringify(classes[className]);
 			let classZip = new JSZip();
-			classZip.file("samples-1.webm", dummyFile);
+			classZip.file("sample-1.webm", dummyFile);
 			classZip.file("samples.json", jsonText);
 			let promise = classZip.generateAsync({type:"blob",compression: "STORE"});
 			promises.push(promise);

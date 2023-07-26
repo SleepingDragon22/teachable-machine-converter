@@ -84,9 +84,9 @@ function convertFile(result){
 			frequencyFrames : freqDataQueue,
 			blob : null,
 			startTime : 0,
-			endTime : 1,
-			recordingDuration : 1,
-			blobFilePath : "",
+			endTime : 1.0375,
+			recordingDuration : 4.15,
+			blobFilePath : "sample-1.webm",
 		})
     };
 }
@@ -117,8 +117,8 @@ document.getElementById("saveAll").addEventListener("click", async function(){
 	}
 	let mainZip = new JSZip();
 	let promises = [];
-	fetch("sample.webm").then((result) => {
-		let dummyFile = result.body;
+	fetch("sample.webm").then(async (result) => {
+		let dummyFile = await result.blob();
 		mainZip.file("manifest.json", `{"type":"audio","version":"2.4.7","appdata":{"publishResults":{},"trainEpochs":50,"trainBatchSize":-1,"trainLearningRate":-1}}`);
 		for (const className in classes){
 			let jsonText = JSON.stringify(classes[className]);

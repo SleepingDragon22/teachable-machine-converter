@@ -112,7 +112,7 @@ document.getElementById("addToClass").addEventListener("click",function(){
 })
 
 document.getElementById("saveAll").addEventListener("click", async function(){
-	if (classes["Background Noise"] == undefined){
+	if (classes["_background_noise_"] == undefined){
 		return;
 	}
 	let mainZip = new JSZip();

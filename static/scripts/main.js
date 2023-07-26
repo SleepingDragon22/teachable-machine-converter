@@ -70,7 +70,7 @@ function convertFile(result){
     var freqData = new Float32Array(analyser.fftSize);
     processor.onaudioprocess = () => {
         analyser.getFloatFrequencyData(freqData);
-        freqDataQueue.push(freqData.slice(0, columnTruncateLength));
+        freqDataQueue.push(Array.from(freqData.slice(0, columnTruncateLength)));
     };
 
     source.start(0);

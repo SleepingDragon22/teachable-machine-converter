@@ -117,28 +117,29 @@ document.getElementById("saveAll").addEventListener("click", async function(){
 	}
 	let mainZip = new JSZip();
 	let promises = [];
-	let dummyFile = await fetch("sample.webm").body;
-	mainZip.file("manifest.json", `{"type":"audio","version":"2.4.7","appdata":{"publishResults":{},"trainEpochs":50,"trainBatchSize":-1,"trainLearningRate":-1}}`);
-	for (const className in classes){
-		let jsonText = JSON.stringify(classes[className]);
-		let classZip = new JSZip();
-		classZip.file("samples-1.webm", dummyFile);
-		classZip.file("samples.json", jsonText);
-		let promise = classZip.generateAsync({type:"blob",compression: "STORE"});
-		promises.push(promise);
-		promise.then((blob) => {
-			console.log(className+"zipped");
-			console.log(blob);
-			mainZip.file(className+"-!-0.zip",blob);
-		});
-	}
-	Promise.allSettled(promises).then(()=> {
-		mainZip.generateAsync({type:"blob",compression: "STORE"}).then((blob) => {
-			saveAs(blob, "project.tm");
+	fetch("sample.webm").then((result) => {
+		let dummyFile = result.body;
+		mainZip.file("manifest.json", `{"type":"audio","version":"2.4.7","appdata":{"publishResults":{},"trainEpochs":50,"trainBatchSize":-1,"trainLearningRate":-1}}`);
+		for (const className in classes){
+			let jsonText = JSON.stringify(classes[className]);
+			let classZip = new JSZip();
+			classZip.file("samples-1.webm", dummyFile);
+			classZip.file("samples.json", jsonText);
+			let promise = classZip.generateAsync({type:"blob",compression: "STORE"});
+			promises.push(promise);
+			promise.then((blob) => {
+				console.log(className+"zipped");
+				console.log(blob);
+				mainZip.file(className+"-!-0.zip",blob);
+			});
+		}
+		Promise.allSettled(promises).then(()=> {
+			mainZip.generateAsync({type:"blob",compression: "STORE"}).then((blob) => {
+				saveAs(blob, "project.tm");
+			});
 		});
 	});
-		
-})
+});
 document.getElementById("clear").addEventListener("click",function(){
     let div = document.getElementById("files");
 	div.innerHTML = "";

@@ -1,3 +1,23 @@
+"use strict";
+function selectFile(contentType, multiple){
+    return new Promise(resolve => {
+        let input = document.createElement('input');
+        input.type = 'file';
+        input.multiple = multiple;
+        input.accept = contentType;
+
+        input.onchange = () => {
+            let files = Array.from(input.files);
+            if (multiple)
+                resolve(files);
+            else
+                resolve(files[0]);
+        };
+
+        input.click();
+    });
+}
+
 function processFile(file){
     let c = new AudioContext({
         sampleRate: 44100,
@@ -48,5 +68,9 @@ function processFile(file){
 document.getElementById("convert").addEventListener("click",async function(){
     let file = await fetch(`open_1.wav`);
     processFile(file);
+})
+
+document.getElementById("select").addEventListener("click",function(){
+    selectFile("audio/wav",false);
 })
 

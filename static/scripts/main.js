@@ -81,7 +81,7 @@ function convertFile(result){
         source.disconnect(analyser);
         processor.disconnect(oac.destination);
 		currClass.push({
-			frequencyFrames : freqDataQueue,
+			frequencyFrames : freqDataQueue.slice(0,43),
 			blob : null,
 			startTime : 0,
 			endTime : 1.0375,

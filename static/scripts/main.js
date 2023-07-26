@@ -117,7 +117,7 @@ document.getElementById("saveAll").addEventListener("click", async function(){
 	}
 	let mainZip = new JSZip();
 	let promises = [];
-	let dummyFile = await fetch("sample.webm");
+	let dummyFile = await fetch("sample.webm").body;
 	mainZip.file("manifest.json", `{"type":"audio","version":"2.4.7","appdata":{"publishResults":{},"trainEpochs":50,"trainBatchSize":-1,"trainLearningRate":-1}}`);
 	for (const className in classes){
 		let jsonText = JSON.stringify(classes[className]);

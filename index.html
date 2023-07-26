@@ -3,14 +3,19 @@
 <head>
 	<!-- <title>Teachable Machine Helper</title> -->
 	<!-- <link rel="stylesheet" href="{{ url_for('static', filename='styles/console.css') }}"> -->
-	<script src="https://code.jquery.com/jquery-3.6.0.slim.min.js"
-		integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI=" crossorigin="anonymous"></script>
-	<script src="https://kit.fontawesome.com/ab80703292.js" crossorigin="anonymous"></script>
+	<script src="static/scripts/jszip.min.js"></script>
+	<script src="static/scripts/FileSaver.min.js"></script>
 </head>
 
 <body>
 	<button id="select">Select File</button>
-	<button id="convert">Convert</button> 
+	<div id="files"></div>
+	<button id="addToClass"> Add To Class</button>
+	<input type="text" id="className" placeholder="Background Noise">
+	<div id="classes"></div>
+	<button id="saveAll">Save All</button>
+	<button id="clear">Clear</button>
+	
 </body>
 <script src="static/scripts/main.js"></script>
 

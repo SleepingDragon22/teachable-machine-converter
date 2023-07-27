@@ -1,0 +1,88 @@
+#training-div{
+    display: flex;
+    width: 100%;
+    height: 30%;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap:5px;
+    padding: 15px;
+    font-size: 16px;
+    border-color: black;
+    border-style: solid;
+    border-radius: 5px;
+}
+
+#training-div button{
+    font-size: 16px;
+}
+
+#single-class-div {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    border-color: black;
+    border-style: solid;
+    border-radius: 5px;
+    width: 60%
+}
+
+#single-class-menu {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+    gap: 5px;
+}
+
+#single-files-div{
+    padding: 5px;
+    height: 100%;
+}
+
+#files {
+    overflow-y:auto;
+    height: 75%
+}
+
+#all-class-div{
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    border-color: black;
+    border-style: solid;
+    border-radius: 5px;
+    width: 40%
+}
+#all-class-menu{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+    gap: 5px;
+}
+
+#all-files-div{
+    padding: 5px;
+    height: 100%;
+}
+
+#classes{
+    overflow-y:auto;
+    height: 75%
+}
+
+html {
+    height: 95%;
+    width: 95%;
+}
+
+body {
+    margin: 0;
+    padding: 1vmax;
+    padding-right: 2vmax;
+    height: 100%;
+    width: 100%;
+}

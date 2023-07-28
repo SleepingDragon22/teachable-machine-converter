@@ -4,6 +4,7 @@ let currClass = [];
 let classes = [];
 let identFuncId = 0;
 let recognizer = undefined;
+let serialPort = undefined;
 
 function storageAvailable(type) {
 	let storage;
@@ -63,7 +64,7 @@ function processFile(file){
 	let fr = new FileReader();
 	fr.onload = () => {
 		c.decodeAudioData(fr.result).then((result)=>{
-			console.log("decoded");
+			//console.log("decoded");
 			convertFile(result);
 		});
 	}
@@ -77,7 +78,7 @@ function processFileForIdent(blob,then){
     });
 	blob.arrayBuffer().then((arr) => {
 		c.decodeAudioData(arr).then((result)=>{
-			console.log("decoded instant file");
+			//console.log("decoded instant file");
 			convertFileForIdent(result,then);
 		});
 	});
@@ -99,7 +100,7 @@ function convertFileForIdent(result,then){
     const processor = oac.createScriptProcessor(1024, 1, 1);
 
     const analyser = oac.createAnalyser();
-    analyser.fftSize = 1024;
+    analyser.fftSize = 1024;  //2048
     analyser.smoothingTimeConstant = 0;
 
     source.buffer = result;
@@ -129,7 +130,7 @@ function convertFile(result){
     let columnTruncateLength = 232;
     let sampleRate = 44100;
     
-	console.log(result);
+	//console.log(result);
 	
     let oac = new OfflineAudioContext({
         numberOfChannels: result.numberOfChannels,
@@ -140,7 +141,7 @@ function convertFile(result){
     const processor = oac.createScriptProcessor(1024, 1, 1);
 
     const analyser = oac.createAnalyser();
-    analyser.fftSize = 2048;
+    analyser.fftSize = 1024;
     analyser.smoothingTimeConstant = 0;
 
     source.buffer = result;
@@ -199,6 +200,7 @@ document.getElementById("addToClass").addEventListener("click",function(){
 
 document.getElementById("saveAll").addEventListener("click", async function(){
 	if (classes["_background_noise_"] == undefined){
+		alert("A class named _background_noise_ is required.")
 		return;
 	}
 	let mainZip = new JSZip();
@@ -214,8 +216,8 @@ document.getElementById("saveAll").addEventListener("click", async function(){
 			let promise = classZip.generateAsync({type:"blob",compression: "STORE"});
 			promises.push(promise);
 			promise.then((blob) => {
-				console.log(className+"zipped");
-				console.log(blob);
+				//console.log(className+"zipped");
+				//console.log(blob);
 				mainZip.file(className+"-!-0.zip",blob);
 			});
 		}
@@ -227,27 +229,48 @@ document.getElementById("saveAll").addEventListener("click", async function(){
 	});
 });
 
-async function ident(){
+let contIdent = false;
+
+function ident(){
 	init();
 }
 
 document.getElementById("enableIdent").addEventListener("click", async function(){
 	recognizer = await createModel();
-    identFuncId =setInterval(ident,500);
+	contIdent = true;
+	ident();
+	//
+    //identFuncId =setInterval(ident,500);
 })
 
 document.getElementById("disableIdent").addEventListener("click",function(){
-    clearInterval(identFuncId);
+	contIdent = false;
+    //clearInterval(identFuncId);
 })
 
 document.getElementById("connect").addEventListener("click",function(){
-	// navigator.serial.requestPort().then((port) => {
-	// 		// Connect to `port` or add it to the list of available ports.
-	// })
-	// .catch((e) => {
-	// 		// The user didn't select a port.
-	// });
+	navigator.serial.requestPort().then((port) => {
+		// Connect to `port` or add it to the list of available ports.
+		port.open({baudRate: 115200}).then(()=>{
+			serialPort = port;
+			let status = document.getElementById("connect-status");
+			status.innerHTML = "Connected"
+		});
+	})
+	.catch((e) => {
+		alert("No port was selected.")
+	});
 });
+
+
+document.getElementById("disconnect").addEventListener("click",function(){
+	if (serialPort != undefined){
+		serialPort.close();
+		let status = document.getElementById("connect-status");
+		status.innerHTML = "Disconnected"
+	}
+});
+
 
 window.addEventListener('load', function () {
 	if (storageAvailable("localStorage")){
@@ -258,7 +281,16 @@ window.addEventListener('load', function () {
 });
 
 function sendResult(className){
-
+	if (serialPort != undefined){
+		if (serialPort.writable != null){
+			className += "$";
+			const encoder = new TextEncoder();
+			const writer = serialPort.writable.getWriter();
+			writer.write(encoder.encode(className)).then(() => {
+				writer.releaseLock();
+			});
+		}
+	}
 }
 
 // more documentation available at
@@ -300,6 +332,8 @@ async function init() {
 			const x = tf.tensor(mySpectrogramData).reshape([-1, ...recognizer.modelInputShape().slice(1)]);
 			//const x = tf.tensor4d(mySpectrogramData, [1].concat(recognizer.modelInputShape().slice(1)));
 			const result = await recognizer.recognize(x);
+			console.log(recognizer.params().fftSize);
+			//console.log(result);
 			// render the probability scores per class
 			let maxClass = "";
 			let maxScore = 0;
@@ -308,10 +342,23 @@ async function init() {
 				labelContainer.childNodes[i].innerHTML = classPrediction;
 				if (result.scores[i] > maxScore){
 					maxClass = classLabels[i];
+					maxScore = result.scores[i];
 				}
 			}
 			tf.dispose([x, result]);
+			let status = document.getElementById("live-status");
+			status.innerHTML = "Result updated"
 			sendResult(maxClass);
+			if (contIdent){
+				setTimeout(init,500);
+			}
 		});
+	})
+	.catch(() => {
+		let status = document.getElementById("live-status");
+		status.innerHTML = "Error fetching live file."
+		if (contIdent){
+			init();
+		}
 	});
 }

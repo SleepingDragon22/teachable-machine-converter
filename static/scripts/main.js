@@ -141,7 +141,7 @@ function convertFile(result){
     const processor = oac.createScriptProcessor(1024, 1, 1);
 
     const analyser = oac.createAnalyser();
-    analyser.fftSize = 1024;
+    analyser.fftSize = 2048;
     analyser.smoothingTimeConstant = 0;
 
     source.buffer = result;
